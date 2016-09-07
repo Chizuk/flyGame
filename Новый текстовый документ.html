@@ -35,9 +35,9 @@
 		function drawPlayer() {
 			drawBrick();
 			if(rightPressed) {
-			paddleX += 7;}
+			paddleX += 5;}
 			else if (leftPressed) {
-			paddleX -= 7};
+			paddleX -= 5;}
 		}
 		
 		function keyDownHandler (e) {
@@ -57,7 +57,7 @@
 			}
 		}//самолет игрока (конец)
 		//keyCode: space- 32  up- 38 left- 37 right- 39 down- 40
-		
+//---------------------------- Выстрел игрока -----------------------------------------
 		var bulletRadius = 5;// размеры снаряда(радиус шара)
 		var BylletDY=2;
 		var FireP=false;
@@ -74,7 +74,7 @@
 			bullArrY[i]=(canvas.height-paddleHeight*2)-bulletRadius;
 		}
 		
-		var a;
+
 		
 		function drawBulleStart(){
 		
@@ -106,7 +106,7 @@
 					ctx.fill();
 					ctx.closePath;			
 					bullArrY[i]-=BylletDY;		
-					DestroyBull();
+					//DestroyBull();
 				}
 			}
 		}
@@ -148,54 +148,60 @@
 			if(Type==1){
 				this.GoY=-0.5;
 			}
-			this.alive=true;//проверка на то что самолет не уничтожен 
+			this.life=true;//проверка на то что самолет не уничтожен 
 			}
 		}
+		
 		var EnemyPilots =[];
+		var MaxEnemy=4;
 		
 		function EnemySpawn(){
-			if(counterLive<4){
-				if(counterTypeA<=CounterTypeB){
+			if(counterLive<MaxEnemy){
+				if(counterTypeA<=counterTypeB){
 					EnemyPilots[counter]=new EnemyPilot(1);
 					counterTypeA+=1;
 					counter+=1;
+					counterLive+=1;
 				}
-				if(counterTypeA>CounterTypeB){
+				if(counterTypeA>counterTypeB){
 					EnemyPilots[counter]=new EnemyPilot(2);
 					counter+=1;
 					counterTypeB+=1;
+					counterLive+=1;
 				}				
 			}
 		}
+		var arr;
+		var bar;
 		function EnemyDraw(){
-			for(var i=0;i<counter;i++){
-				if(EnemyPilots[i].alive){
+			EnemySpawn();
+			for(var i=0;i<=counter;i++){
+				bar=EnemyPilots.StartX[i+1];//tyt
+			    arr=EnemyPilots[i].life;//i tyt
+				if(arr == true){
 					ctc.beginPath();
-					ctx.rect(EnemyPilots[i].StartX, EnemyPilots[i].StartY, EnemyPilots[i].Width, EnemyPilots[i].Height);
+					
+					//ctx.rect(EnemyPilots[i].StartX, EnemyPilots[i].StartY, EnemyPilots[i].Width, EnemyPilots[i].Height);
+					ctx.rect(paddleX, canvas.height-paddleHeight*5, brickkWidth, brickkHeight);
 					ctx.fillStyle = "0095DD";
 					ctx.fill();
 					ctx.closePath();	
-					DestroyEnemy(i);
+					//DestroyEnemy(i);
 				}
 			}	
 		
 		}
 		function DestroyEnemy(i){
-			
+		//	for(int j=0;j<)
 		
 		}
 			
-			var brickkWidth = 75;
-			ctx.beginPath();
-			ctx.rect(paddleX, canvas.height-paddleHeight*2, brickkWidth, brickkHeight);
-			ctx.fillStyle = "0095DD";
-			ctx.fill();
-			ctx.closePath();
 //---------------------------------------------------------
 		function drawGame(){
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 			drawPlayer();//прорисовка игрока 
 			drawBullet();//прорисовка выстрелов игрока		
+			EnemyDraw();//прорисовка врага 
 		}
 		
 		setInterval(drawGame, 10);
