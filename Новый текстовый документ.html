@@ -168,15 +168,29 @@
 			}
 		}
 		function EnemyDraw(){
-		
+			for(var i=0;i<counter;i++){
+				if(EnemyPilots[i].alive){
+					ctc.beginPath();
+					ctx.rect(EnemyPilots[i].StartX, EnemyPilots[i].StartY, EnemyPilots[i].Width, EnemyPilots[i].Height);
+					ctx.fillStyle = "0095DD";
+					ctx.fill();
+					ctx.closePath();	
+					DestroyEnemy(i);
+				}
+			}	
 		
 		}
-		function DestroyEnemy(){
-		
+		function DestroyEnemy(i){
+			
 		
 		}
 			
-			
+			var brickkWidth = 75;
+			ctx.beginPath();
+			ctx.rect(paddleX, canvas.height-paddleHeight*2, brickkWidth, brickkHeight);
+			ctx.fillStyle = "0095DD";
+			ctx.fill();
+			ctx.closePath();
 //---------------------------------------------------------
 		function drawGame(){
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
