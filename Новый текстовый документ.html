@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="PracticeCss.css">
+    <meta charset="utf-8" />
+    <title>Gamedev Canvas Workshop</title>
+    <style>
+    	* { padding: 0; margin: 0; }
+    	canvas { background: #eee; display: block; margin: 0 auto; }
+    </style>
+</head>
+<body>
+
+<canvas id="myCanvas" width="720" height="600"></canvas>
+
+<script>
+	var canvas = document.getElementById("myCanvas");//самолет игрока (начало)
+	var ctx = canvas.getContext("2d");
+	var paddleHeight = 30;
+	var paddleWidth = 75;
+	var paddleX = (canvas.width-paddleWidth)/2;
+	var rightPressed = false;
+	var leftPressed = false;
+	document.addEventListener("keydown", keyDownHandler, false);
+	document.addEventListener("keyup", keyUpHandler, false);
+		function drawBrick() {
+			var brickkHeight = 25;
+			var brickkWidth = 75;
+			ctx.beginPath();
+			ctx.rect(paddleX, canvas.height-paddleHeight*2, brickkWidth, brickkHeight);
+			ctx.fillStyle = "0095DD";
+			ctx.fill();
+			ctx.closePath();
+		}
+		function drawPlayer() {
+			drawBrick();
+			if(rightPressed) {
+			paddleX += 7;}
+			else if (leftPressed) {
+			paddleX -= 7};
+		}
+		
+		function keyDownHandler (e) {
+			if(e.keyCode == 39) {
+			rightPressed = true;
+			}
+			else if (e.keyCode == 37) {
+			leftPressed = true;
+			}
+		}
+			function keyUpHandler (e) {
+			if(e.keyCode == 39) {
+			rightPressed = false;
+			}
+			else if (e.keyCode == 37) {
+			leftPressed = false;
+			}
+		}//самолет игрока (конец)
+		//keyCode: space- 32  up- 38 left- 37 right- 39 down- 40
+		
+		var bulletRadius = 5;// размеры снаряда(радиус шара)
+		var BylletDY=2;
+		var FireP=false;
+		var Bull=0;
+		document.addEventListener("keyup", PressFireUP, false);
+		document.addEventListener("keydown", PressFireDOWN, false);
+			//параметры для прорисовки пули игрока
+		var NumderBull=10;//кол-во пуль 
+		var bullArrX=[], bullArrY=[];//	масивы с координатами х и у 	
+		var idBull=[];
+		var Bullid;
+		for(var i=0;i<NumderBull;i++){
+			idBull[i]=0;
+			bullArrY[i]=(canvas.height-paddleHeight*2)-bulletRadius;
+		}
+		
+		var a;
+		
+		function drawBulleStart(){
+		
+				for(var i=0;i<NumderBull;i++){
+					if(idBull[i]==0){
+						Bullid=i;
+					}
+				}
+				idBull[Bullid]=1;
+				bullArrX[Bullid]=(paddleX+paddleWidth/2);
+		}
+		
+		function DestroyBull(){
+			for(var i=0;i<NumderBull;i++){
+				if(bullArrY[i]<-6){
+					idBull[i]=0;
+					bullArrY[i]=(canvas.height-paddleHeight*2)-bulletRadius;					
+				}				
+			}
+		}
+		
+			
+		function drawBullet(){
+			for(var i=0;i<NumderBull;i++){
+				if(idBull[i]== 1){
+					ctx.beginPath();
+					ctx.arc(bullArrX[i],bullArrY[i],bulletRadius,0,Math.PI*2);//X-отступ слева,Y- сверху 
+					ctx.fillStyle="0095DD";
+					ctx.fill();
+					ctx.closePath;			
+					bullArrY[i]-=BylletDY;		
+					DestroyBull();
+				}
+			}
+		}
+		
+		function PressFireUP (e) {
+			if(e.keyCode == 32 || e.keyCode == 38) {
+			FireP = true;
+			drawBulleStart();
+			}
+		}
+		
+		function PressFireDOWN (e) {
+			if(e.keyCode == 32 || e.keyCode == 38) {
+			FireP = false;
+			}
+		}
+//---------------------------------------------------------
+//враги 
+		var counter=0;//щетчик врагов
+		var counterLive=0;//щетчик живых врагов
+		var counterTypeA=0;//щетчик 
+		var counterTypeB=0;
+		
+		class EnemyPilot{
+			constuctor(Type){
+			this.Height=30;
+			this.Width=75;
+			if(Type==1){
+				this.StartX=0;					
+			}
+			if(Type==2){
+				this.StartX=canvas.width-this.width;				
+			}
+			this.StartY=0;
+			this.GoX=0.5;
+			if(Type==1){
+				this.GoY=0.5;
+			}pe
+			if(Type==1){
+				this.GoY=-0.5;
+			}
+			this.alive=true;//проверка на то что самолет не уничтожен 
+			}
+		}
+		var EnemyPilots =[];
+		
+		function EnemySpawn(){
+			if(counterLive<4){
+				if(counterTypeA<=CounterTypeB){
+					EnemyPilots[counter]=new EnemyPilot(1);
+					counterTypeA+=1;
+					counter+=1;
+				}
+				if(counterTypeA>CounterTypeB){
+					EnemyPilots[counter]=new EnemyPilot(2);
+					counter+=1;
+					counterTypeB+=1;
+				}				
+			}
+		}
+		function EnemyDraw(){
+		
+		
+		}
+		function DestroyEnemy(){
+		
+		
+		}
+			
+			
+//---------------------------------------------------------
+		function drawGame(){
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+			drawPlayer();//прорисовка игрока 
+			drawBullet();//прорисовка выстрелов игрока		
+		}
+		
+		setInterval(drawGame, 10);
+
+		
+		</script>
+
+		
+</body>
+</html>
