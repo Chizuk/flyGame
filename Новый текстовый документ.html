@@ -106,7 +106,7 @@
 					ctx.fill();
 					ctx.closePath;			
 					bullArrY[i]-=BylletDY;		
-					//DestroyBull();
+					DestroyBull();
 				}
 			}
 		}
@@ -130,26 +130,24 @@
 		var counterTypeA=0;//щетчик 
 		var counterTypeB=0;
 		
-		class EnemyPilot{
-			constuctor(Type){
+		function EnemyPilot(Type){
 			this.Height=30;
 			this.Width=75;
 			if(Type==1){
 				this.StartX=0;					
 			}
 			if(Type==2){
-				this.StartX=canvas.width-this.width;				
+				this.StartX=canvas.width-this.Width;				
 			}
 			this.StartY=0;
 			this.GoX=0.5;
 			if(Type==1){
 				this.GoY=0.5;
-			}pe
+			}
 			if(Type==1){
 				this.GoY=-0.5;
 			}
 			this.life=true;//проверка на то что самолет не уничтожен 
-			}
 		}
 		
 		var EnemyPilots =[];
@@ -176,13 +174,10 @@
 		function EnemyDraw(){
 			EnemySpawn();
 			for(var i=0;i<=counter;i++){
-				bar=EnemyPilots.StartX[i+1];//tyt
 			    arr=EnemyPilots[i].life;//i tyt
 				if(arr == true){
-					ctc.beginPath();
-					
-					//ctx.rect(EnemyPilots[i].StartX, EnemyPilots[i].StartY, EnemyPilots[i].Width, EnemyPilots[i].Height);
-					ctx.rect(paddleX, canvas.height-paddleHeight*5, brickkWidth, brickkHeight);
+					ctx.beginPath();					
+					ctx.rect(EnemyPilots[i].StartX, EnemyPilots[i].StartY, EnemyPilots[i].Width, EnemyPilots[i].Height);
 					ctx.fillStyle = "0095DD";
 					ctx.fill();
 					ctx.closePath();	
