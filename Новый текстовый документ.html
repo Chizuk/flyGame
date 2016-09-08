@@ -38,8 +38,17 @@
 			paddleX += 5;}
 			else if (leftPressed) {
 			paddleX -= 5;}
+			colision();
 		}
-		
+		function colision(){
+			if(paddleX<0){
+				paddleX=0;
+			}
+			var RightCol=canvas.width-brickkWidth; 
+			if (paddleX >RightCol){
+				paddleX=canvas.width-brickkWidth;
+			}		
+		}
 		function keyDownHandler (e) {
 			if(e.keyCode == 39) {
 			rightPressed = true;
@@ -127,26 +136,30 @@
 //враги 
 		var counter=0;//щетчик врагов
 		var counterLive=0;//щетчик живых врагов
-		var counterTypeA=0;//щетчик 
-		var counterTypeB=0;
+		var counterType=[0,0,0,0];//щетчик врагов разных тивов 
 		
 		function EnemyPilot(Type){
-			this.Height=30;
+			this.Height=20;
 			this.Width=75;
-			if(Type==1){
-				this.StartX=0;					
+			this.typeE=Type;
+			this.indent=80;
+			switch(Type){
+				case 0: 					
+					this.StartX=this.indent;					
+					break;
+				case 1:
+					this.StartX=this.Width+this.indent*2;
+					break;
+				case 2:
+					this.StartX=(canvas.width-(this.Width+this.indent)*2);
+					break;
+				case 3:
+					this.StartX=canvas.width-(this.Width+this.indent);
+					break;			
 			}
-			if(Type==2){
-				this.StartX=canvas.width-this.Width;				
-			}
-			this.StartY=0;
-			this.GoX=0.5;
-			if(Type==1){
-				this.GoY=0.5;
-			}
-			if(Type==1){
-				this.GoY=-0.5;
-			}
+			this.StartY=0-this.Height;
+			this.GoX=1;
+			this.GoY=0.5;
 			this.life=true;//проверка на то что самолет не уничтожен 
 		}
 		
@@ -155,36 +168,66 @@
 		
 		function EnemySpawn(){
 			if(counterLive<MaxEnemy){
-				if(counterTypeA<=counterTypeB){
-					EnemyPilots[counter]=new EnemyPilot(1);
-					counterTypeA+=1;
+				if(counterType[0]<=counterType[1] && counterType[0]<=counterType[2] && counterType[0]<=counterType[3]){
+					EnemyPilots[counter]=new EnemyPilot(0);
 					counter+=1;
+					counterType[0]+=1;
 					counterLive+=1;
 				}
-				if(counterTypeA>counterTypeB){
+				if(counterType[1]<counterType[0] && counterType[1]<=counterType[2] && counterType[1]<=counterType[3]){
+					EnemyPilots[counter]=new EnemyPilot(1);
+					counter+=1;
+					counterLive+=1;
+					counterType[1]+=1;
+				}
+				if(counterType[2]<counterType[0] && counterType[2]<counterType[1] && counterType[2]<=counterType[3]){
 					EnemyPilots[counter]=new EnemyPilot(2);
 					counter+=1;
-					counterTypeB+=1;
 					counterLive+=1;
+					counterType[2]+=1;
+				}
+				if(counterType[3]<counterType[0] && counterType[3]<counterType[2] && counterType[3]<counterType[1]){
+					EnemyPilots[counter]=new EnemyPilot(3);
+					counter+=1;
+					counterLive+=1;
+					counterType[3]+=1;
 				}				
 			}
 		}
-		var arr;
-		var bar;
 		function EnemyDraw(){
 			EnemySpawn();
-			for(var i=0;i<=counter;i++){
-			    arr=EnemyPilots[i].life;//i tyt
-				if(arr == true){
+			for(var i=0;i<counter;i++){
+				if(EnemyPilots[i].life){
 					ctx.beginPath();					
 					ctx.rect(EnemyPilots[i].StartX, EnemyPilots[i].StartY, EnemyPilots[i].Width, EnemyPilots[i].Height);
 					ctx.fillStyle = "0095DD";
 					ctx.fill();
 					ctx.closePath();	
+					EnemyGo(i);
 					//DestroyEnemy(i);
 				}
 			}	
 		
+		}
+		function EnemyGo(i){
+			switch (EnemyPilots[i].typeE){
+				case 0:
+					EnemyPilots[i].StartX+=EnemyPilots[i].GoX;
+					EnemyPilots[i].StartY+=EnemyPilots[i].GoY;
+					break;
+				case 1:
+					EnemyPilots[i].StartX+=EnemyPilots[i].GoX;
+					EnemyPilots[i].StartY+=EnemyPilots[i].GoY;
+					break;
+				case 2:
+					EnemyPilots[i].StartX-=EnemyPilots[i].GoX;
+					EnemyPilots[i].StartY+=EnemyPilots[i].GoY;
+					break;
+				case 3: 
+					EnemyPilots[i].StartX-=EnemyPilots[i].GoX;
+					EnemyPilots[i].StartY+=EnemyPilots[i].GoY;
+					break;
+			}
 		}
 		function DestroyEnemy(i){
 		//	for(int j=0;j<)
