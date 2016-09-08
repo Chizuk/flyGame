@@ -21,11 +21,11 @@
 	var paddleX = (canvas.width-paddleWidth)/2;
 	var rightPressed = false;
 	var leftPressed = false;
+	var brickkHeight = 25;
+	var brickkWidth = 75;
 	document.addEventListener("keydown", keyDownHandler, false);
 	document.addEventListener("keyup", keyUpHandler, false);
 		function drawBrick() {
-			var brickkHeight = 25;
-			var brickkWidth = 75;
 			ctx.beginPath();
 			ctx.rect(paddleX, canvas.height-paddleHeight*2, brickkWidth, brickkHeight);
 			ctx.fillStyle = "0095DD";
