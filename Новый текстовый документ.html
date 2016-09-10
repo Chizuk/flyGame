@@ -93,17 +93,18 @@
 					}
 				}
 				idBull[Bullid]=1;
-				bullArrX[Bullid]=(paddleX+paddleWidth/2);
+				bullArrX[Bullid]=(paddleX+brickkWidth/2);
 		}
-		
-		function DestroyBull(){
-			for(var i=0;i<NumderBull;i++){
-				if(bullArrY[i]<-6){
+		var DestroyB=false;
+		function DestroyBull(i){
+			
+				if(bullArrY[i]<-6 || DestroyB){
 					idBull[i]=0;
-					bullArrY[i]=(canvas.height-paddleHeight*2)-bulletRadius;					
+					bullArrY[i]=(canvas.height-paddleHeight*2)-bulletRadius;	
+					DestroyB=false;					
 				}				
 			}
-		}
+		
 		
 			
 		function drawBullet(){
@@ -115,7 +116,7 @@
 					ctx.fill();
 					ctx.closePath;			
 					bullArrY[i]-=BylletDY;		
-					DestroyBull();
+					DestroyBull(i);
 				}
 			}
 		}
@@ -142,7 +143,7 @@
 			this.Height=20;
 			this.Width=50;
 			this.typeE=Type;
-			this.indent=80;
+			this.indent=50;
 			this.Right;
 			switch(Type){
 				case 0: 					
@@ -209,27 +210,19 @@
 					ctx.fill();
 					ctx.closePath();	
 					EnemyGo(i);
-					//DestroyEnemy(i);
+					DestroyEnemy(i);
 				}
 			}	
 		
 		}
-		var B;
 		
 		function EnemyGo(i){
-			B=((canvas.width/2-EnemyPilots[i].Width)-5);
 			switch (EnemyPilots[i].typeE){
 				case 0:
-					//if(){
-						EnemyPilots[i].StartX+=EnemyPilots[i].GoX;
-						EnemyPilots[i].StartY+=EnemyPilots[i].GoY;
-						break;
-					//}
-				case 1:
-					if(EnemyPilots[i].Right==false){
+				if(EnemyPilots[i].Right==false){
 						EnemyPilots[i].StartX-=EnemyPilots[i].GoX;
 						EnemyPilots[i].StartY+=EnemyPilots[i].GoY;
-						if(EnemyPilots[i].StartX==EnemyPilots[i].indent){
+						if(EnemyPilots[i].StartX<=25){
 							EnemyPilots[i].Right=true;
 						}
 						
@@ -238,7 +231,25 @@
 					if(EnemyPilots[i].Right==true){
 						EnemyPilots[i].StartX+=EnemyPilots[i].GoX;
 						EnemyPilots[i].StartY+=EnemyPilots[i].GoY;
-						if(EnemyPilots[i].StartX>B){
+						if(EnemyPilots[i].StartX>=105){
+							EnemyPilots[i].Right=false;
+						}
+						break;
+					}
+				case 1:
+					if(EnemyPilots[i].Right==false){
+						EnemyPilots[i].StartX-=EnemyPilots[i].GoX;
+						EnemyPilots[i].StartY+=EnemyPilots[i].GoY;
+						if(EnemyPilots[i].StartX<=205){
+							EnemyPilots[i].Right=true;
+						}
+						
+						break;
+					}
+					if(EnemyPilots[i].Right==true){
+						EnemyPilots[i].StartX+=EnemyPilots[i].GoX;
+						EnemyPilots[i].StartY+=EnemyPilots[i].GoY;
+						if(EnemyPilots[i].StartX>=285){
 							EnemyPilots[i].Right=false;
 						}
 						break;
@@ -246,20 +257,53 @@
 					
 				case 2:
 					
+						if(EnemyPilots[i].Right==false){
 						EnemyPilots[i].StartX-=EnemyPilots[i].GoX;
 						EnemyPilots[i].StartY+=EnemyPilots[i].GoY;
+						if(EnemyPilots[i].StartX<=385){
+							EnemyPilots[i].Right=true;
+						}
+						
 						break;
+					}
+					if(EnemyPilots[i].Right==true){
+						EnemyPilots[i].StartX+=EnemyPilots[i].GoX;
+						EnemyPilots[i].StartY+=EnemyPilots[i].GoY;
+						if(EnemyPilots[i].StartX>=465){
+							EnemyPilots[i].Right=false;
+						}
+						break;
+					}
 				case 3: 
+						if(EnemyPilots[i].Right==false){
 						EnemyPilots[i].StartX-=EnemyPilots[i].GoX;
 						EnemyPilots[i].StartY+=EnemyPilots[i].GoY;
+						if(EnemyPilots[i].StartX<=565){
+							EnemyPilots[i].Right=true;
+						}
+						
 						break;
+					}
+					if(EnemyPilots[i].Right==true){
+						EnemyPilots[i].StartX+=EnemyPilots[i].GoX;
+						EnemyPilots[i].StartY+=EnemyPilots[i].GoY;
+						if(EnemyPilots[i].StartX>=645){
+							EnemyPilots[i].Right=false;
+						}
+						break;
+					}
 			}
 		}
 		function DestroyEnemy(i){
-		//	for(int j=0;j<)
-		
-		}
-			
+			for(var j=0;j<NumderBull;j++){
+				if(bullArrX[j]>EnemyPilots[i].StartX && bullArrX[j]<(EnemyPilots[i].StartX+EnemyPilots[i].Width) && bullArrY[j]>EnemyPilots[i].StartY && bullArrY[j]<(EnemyPilots[i].StartY+EnemyPilots[i].Height)){
+					EnemyPilots[i].life==false;
+					counterLive-=1;
+					DestroyB=true;
+					DestroyBull(j);
+				}		
+			}
+		}	
 //---------------------------------------------------------
 		function drawGame(){
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
