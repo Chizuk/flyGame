@@ -14,65 +14,9 @@
 <canvas id="myCanvas" width="720" height="600"></canvas>
 
 <script>
-	var canvas = document.getElementById("myCanvas");
+	var canvas = document.getElementById("myCanvas");//самолет игрока (начало)
 	var ctx = canvas.getContext("2d");
-	var GameStyle="MainMenu"//режимы прорисовки (меню игра и пауза )
-	
-	
-	
-//-------------навигация по главному меню-----------
-	var elem =document.getElementById('myCanvas'), 
-		elemLeft = elem.offsetLeft,
-		elemTop = elem.offsetTop;
-	var MouseX,MouseY;
-	
-	document.addEventListener("click", function(event){
-		MouseX = event.pageX - elemLeft,
-        MouseY = event.pageY - elemTop;
-		if(MouseX>BlockX && MouseY>StartBlockY-BlockIndent-BlockHeight && MouseX<BlockX+BlockWidth && MouseY<StartBlockY-BlockIndent){
-			GameStyle="Game";
-		}
-	}, false);
-	
-	
-	function ClickGame(event){
-		MouseX = event.pageX - elemLeft,
-        MouseY = event.pageY - elemTop;
-		if(MouseX>BlockX && MouseY>StartBlockY-BlockIndent-BlockHeight && MouseX<BlockX+BlockWidth && MouseY<StartBlockY-BlockIndent){
-			GameStyle="Game";
-		}
-	}
-//---------------------меню-------------------------	
-var BlockHeight=75;
-var BlockWidth=150;
-var BlockIndent=35;
-var BlockX=(canvas.width-BlockWidth)/2;
-var StartBlockY=canvas.height/2;
-
-function DrawGameBlock(){
-	ctx.beginPath();
-	ctx.rect(BlockX,StartBlockY-BlockIndent-BlockHeight,BlockWidth,BlockHeight);
-	ctx.fillStyle = "red";
-	ctx.fill();
-	ctx.closePath();
-}
-function DrawSettingsBlock(){
-	ctx.beginPath();
-	ctx.rect(BlockX,StartBlockY,BlockWidth,BlockHeight);
-	ctx.fillStyle = "Yellow";
-	ctx.fill();
-	ctx.closePath();
-}
-function DrawTopBlock(){
-	ctx.beginPath();
-	ctx.rect(BlockX,StartBlockY+BlockIndent+BlockHeight,BlockWidth,BlockHeight);
-	ctx.fillStyle = "Green";
-	ctx.fill();
-	ctx.closePath();
-}
-
-//---------------------игрок------------------------	
-	var paddleHeight = 30;//самолет игрока (начало)
+	var paddleHeight = 30;
 	var paddleWidth = 75;
 	var paddleX = (canvas.width-paddleWidth)/2;
 	var rightPressed = false;
@@ -84,7 +28,7 @@ function DrawTopBlock(){
 		function drawBrick() {
 			ctx.beginPath();
 			ctx.rect(paddleX, canvas.height-paddleHeight*2, brickkWidth, brickkHeight);
-			ctx.fillStyle = "#DD32F1";
+			ctx.fillStyle = "0095DD";
 			ctx.fill();
 			ctx.closePath();
 		}
@@ -136,8 +80,10 @@ function DrawTopBlock(){
 		var Bullid;
 		for(var i=0;i<NumderBull;i++){
 			idBull[i]=0;
-			bullArrY[i]=-100;
+			bullArrY[i]=(canvas.height-paddleHeight*2)-bulletRadius;
 		}
+		
+
 		
 		function drawBulleStart(){
 		
@@ -148,14 +94,13 @@ function DrawTopBlock(){
 				}
 				idBull[Bullid]=1;
 				bullArrX[Bullid]=(paddleX+brickkWidth/2);
-				bullArrY[Bullid]=(canvas.height-paddleHeight*2)-bulletRadius;
 		}
 		var DestroyB=false;
 		function DestroyBull(i){
 			
 				if(bullArrY[i]<-6 || DestroyB){
 					idBull[i]=0;
-					bullArrY[i]=-250;	
+					bullArrY[i]=(canvas.height-paddleHeight*2)-bulletRadius;	
 					DestroyB=false;					
 				}				
 			}
@@ -167,7 +112,7 @@ function DrawTopBlock(){
 				if(idBull[i]== 1){
 					ctx.beginPath();
 					ctx.arc(bullArrX[i],bullArrY[i],bulletRadius,0,Math.PI*2);//X-отступ слева,Y- сверху 
-					ctx.fillStyle="#145FDD";
+					ctx.fillStyle="0095DD";
 					ctx.fill();
 					ctx.closePath;			
 					bullArrY[i]-=BylletDY;		
@@ -235,30 +180,24 @@ function DrawTopBlock(){
 					counterType[0]+=1;
 					counterLive+=1;
 				}
-				else{
-					if(counterType[1]<counterType[0] && counterType[1]<=counterType[2] && counterType[1]<=counterType[3]){
-						EnemyPilots[counter]=new EnemyPilot(1);
-						counter+=1;
-						counterLive+=1;
-						counterType[1]+=1;
-					}
-					else{
-						if(counterType[2]<counterType[0] && counterType[2]<counterType[1] && counterType[2]<=counterType[3]){
-							EnemyPilots[counter]=new EnemyPilot(2);
-							counter+=1;
-							counterLive+=1;
-							counterType[2]+=1;
-						}					
-						else{
-							if(counterType[3]<counterType[0] && counterType[3]<counterType[2] && counterType[3]<counterType[1]){
-								EnemyPilots[counter]=new EnemyPilot(3);
-								counter+=1;
-								counterLive+=1;
-								counterType[3]+=1;
-							}	
-						}	
-					}
+				if(counterType[1]<counterType[0] && counterType[1]<=counterType[2] && counterType[1]<=counterType[3]){
+					EnemyPilots[counter]=new EnemyPilot(1);
+					counter+=1;
+					counterLive+=1;
+					counterType[1]+=1;
 				}
+				if(counterType[2]<counterType[0] && counterType[2]<counterType[1] && counterType[2]<=counterType[3]){
+					EnemyPilots[counter]=new EnemyPilot(2);
+					counter+=1;
+					counterLive+=1;
+					counterType[2]+=1;
+				}
+				if(counterType[3]<counterType[0] && counterType[3]<counterType[2] && counterType[3]<counterType[1]){
+					EnemyPilots[counter]=new EnemyPilot(3);
+					counter+=1;
+					counterLive+=1;
+					counterType[3]+=1;
+				}				
 			}
 		}
 		function EnemyDraw(){
@@ -267,13 +206,14 @@ function DrawTopBlock(){
 				if(EnemyPilots[i].life){
 					ctx.beginPath();					
 					ctx.rect(EnemyPilots[i].StartX, EnemyPilots[i].StartY, EnemyPilots[i].Width, EnemyPilots[i].Height);
-					ctx.fillStyle = "#0095DD";
+					ctx.fillStyle = "0095DD";
 					ctx.fill();
 					ctx.closePath();	
 					EnemyGo(i);
 					DestroyEnemy(i);
 				}
 			}	
+		
 		}
 		
 		function EnemyGo(i){
@@ -340,7 +280,8 @@ function DrawTopBlock(){
 						EnemyPilots[i].StartY+=EnemyPilots[i].GoY;
 						if(EnemyPilots[i].StartX<=565){
 							EnemyPilots[i].Right=true;
-						}						
+						}
+						
 						break;
 					}
 					if(EnemyPilots[i].Right==true){
@@ -356,36 +297,19 @@ function DrawTopBlock(){
 		function DestroyEnemy(i){
 			for(var j=0;j<NumderBull;j++){
 				if(bullArrX[j]>EnemyPilots[i].StartX && bullArrX[j]<(EnemyPilots[i].StartX+EnemyPilots[i].Width) && bullArrY[j]>EnemyPilots[i].StartY && bullArrY[j]<(EnemyPilots[i].StartY+EnemyPilots[i].Height)){
-					EnemyPilots[i].life=false;
+					EnemyPilots[i].life==false;
 					counterLive-=1;
 					DestroyB=true;
 					DestroyBull(j);
 				}		
 			}
-		}
-
-//---------------------------смерть игрока-------------------------	
-/*function EndGame()	{
-
-}*/
-//-----------------------------------------------------------------
+		}	
+//---------------------------------------------------------
 		function drawGame(){
-			switch(GameStyle){
-				case "MainMenu":
-					ctx.clearRect(0, 0, canvas.width, canvas.height);
-					DrawGameBlock();
-					DrawSettingsBlock();
-					DrawTopBlock();
-					break;
-				case "Game":
-					ctx.clearRect(0, 0, canvas.width, canvas.height);
-					drawPlayer();//прорисовка игрока 
-					drawBullet();//прорисовка выстрелов игрока		
-					EnemyDraw();//прорисовка врага 
-					break;
-			}
-		
-		
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+			drawPlayer();//прорисовка игрока 
+			drawBullet();//прорисовка выстрелов игрока		
+			EnemyDraw();//прорисовка врага 
 		}
 		
 		setInterval(drawGame, 10);
