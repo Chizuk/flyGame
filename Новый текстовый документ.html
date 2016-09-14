@@ -193,7 +193,7 @@ function DrawTopBlock() {
 		var counterLive=0;//щетчик живых врагов
 		var counterType=[0,0,0,0];//щетчик врагов разных тивов 
 		
-		function EnemyPilot(Type,num){
+		function EnemyPilot(Type){
 			this.Height=20;
 			this.Width=50;
 			this.typeE=Type;
@@ -217,7 +217,6 @@ function DrawTopBlock() {
 					this.Right=false;
 					break;			
 			}
-			this.Number=num;
 			this.StartY=0-this.Height;
 			this.GoX=1;
 			this.GoY=0.5;
@@ -230,28 +229,28 @@ function DrawTopBlock() {
 		function EnemySpawn(){
 			if(counterLive<MaxEnemy){
 				if(counterType[0]<=counterType[1] && counterType[0]<=counterType[2] && counterType[0]<=counterType[3]){
-					EnemyPilots[counter]=new EnemyPilot(0,counter);
+					EnemyPilots[counter]=new EnemyPilot(0);
 					counter+=1;
 					counterType[0]+=1;
 					counterLive+=1;
 				}
 				else{
 					if(counterType[1]<counterType[0] && counterType[1]<=counterType[2] && counterType[1]<=counterType[3]){
-						EnemyPilots[counter]=new EnemyPilot(1,counter);
+						EnemyPilots[counter]=new EnemyPilot(1);
 						counter+=1;
 						counterLive+=1;
 						counterType[1]+=1;
 					}
 					else{
 						if(counterType[2]<counterType[0] && counterType[2]<counterType[1] && counterType[2]<=counterType[3]){
-							EnemyPilots[counter]=new EnemyPilot(2,counter);
+							EnemyPilots[counter]=new EnemyPilot(2);
 							counter+=1;
 							counterLive+=1;
 							counterType[2]+=1;
 						}					
 						else{
 							if(counterType[3]<counterType[0] && counterType[3]<counterType[2] && counterType[3]<counterType[1]){
-								EnemyPilots[counter]=new EnemyPilot(3,counter);
+								EnemyPilots[counter]=new EnemyPilot(3);
 								counter+=1;
 								counterLive+=1;
 								counterType[3]+=1;
@@ -273,6 +272,9 @@ function DrawTopBlock() {
 					ctx.closePath();	
 					EnemyGo(c);
 					DestroyEnemy(c);
+					if(EnemyPilots[c].StartY==100||EnemyPilots[c].StartY==200||EnemyPilots[c].StartY==300||EnemyPilots[c].StartY==400){
+							EnemyBullStart(c);
+						}
 				}
 			}	
 		
@@ -284,9 +286,7 @@ function DrawTopBlock() {
 				if(EnemyPilots[i].Right==false){
 						EnemyPilots[i].StartX-=EnemyPilots[i].GoX;
 						EnemyPilots[i].StartY+=EnemyPilots[i].GoY;
-						if(EnemyPilots[i].StartY==100||EnemyPilots[i].StartY==200||EnemyPilots[i].StartY==300||EnemyPilots[i].StartY==400){
-							EnemyBullStart();
-						}
+						
 						if(EnemyPilots[i].StartX<=25){
 							EnemyPilots[i].Right=true;
 						}
@@ -296,9 +296,7 @@ function DrawTopBlock() {
 					if(EnemyPilots[i].Right==true){
 						EnemyPilots[i].StartX+=EnemyPilots[i].GoX;
 						EnemyPilots[i].StartY+=EnemyPilots[i].GoY;
-						if(EnemyPilots[i].StartY==100||EnemyPilots[i].StartY==200||EnemyPilots[i].StartY==300||EnemyPilots[i].StartY==400){
-							EnemyBullStart();
-						}
+						
 						if(EnemyPilots[i].StartX>=105){
 							EnemyPilots[i].Right=false;
 						}
@@ -308,9 +306,6 @@ function DrawTopBlock() {
 					if(EnemyPilots[i].Right==false){
 						EnemyPilots[i].StartX-=EnemyPilots[i].GoX;
 						EnemyPilots[i].StartY+=EnemyPilots[i].GoY;
-						if(EnemyPilots[i].StartY==100||EnemyPilots[i].StartY==200||EnemyPilots[i].StartY==300||EnemyPilots[i].StartY==400){
-							EnemyBullStart(EnemyPilots[i].Number);
-						}
 						if(EnemyPilots[i].StartX<=205){
 							EnemyPilots[i].Right=true;
 						}
@@ -320,9 +315,6 @@ function DrawTopBlock() {
 					if(EnemyPilots[i].Right==true){
 						EnemyPilots[i].StartX+=EnemyPilots[i].GoX;
 						EnemyPilots[i].StartY+=EnemyPilots[i].GoY;
-						if(EnemyPilots[i].StartY==100||EnemyPilots[i].StartY==200||EnemyPilots[i].StartY==300||EnemyPilots[i].StartY==400){
-							EnemyBullStart();
-						}
 						if(EnemyPilots[i].StartX>=285){
 							EnemyPilots[i].Right=false;
 						}
@@ -388,21 +380,26 @@ function DrawTopBlock() {
 			EnemyBullLive[i]=0;			
 		}
 		
-		function EnemyBullStart(a,b){
+		function EnemyBullStart(c){
 			for(var i=0;i<24;i++){
 				if(EnemyBullLive[i]==0){
 					EnemyBullId=i;
 				}
 			}
-			//EnemyBullArrX[EnemyBullId]=;//
-			//EnemyBullArrY[EnemyBullId]=;//
+			
+			EnemyBullArrX[EnemyBullId]=(EnemyPilots[c].StartX+EnemyPilots[c].Width)/2;//
+			EnemyBullArrY[EnemyBullId]=EnemyPilots[c].StartY+EnemyPilots[c].Height+bulletRadius;//
+			
+			EnemyFire();
 		}
 		function EnemyFire(){
-			ctx.beginPath();
-			ctx.arc(EnemyBullArrX[i],EnemyBullArrY[i],bulletRadius,0,Math.PI*2);
-			ctx.fillStyle="red";
-			ctx.fill();
-			ctx.closePath;			
+			for(var i=0;i<24;i++){
+				ctx.beginPath();
+				ctx.arc(EnemyBullArrX[i],EnemyBullArrY[i],bulletRadius,0,Math.PI*2);
+				ctx.fillStyle="red";
+				ctx.fill();
+				ctx.closePath;		
+			}
 		}
 //--------------------Прорисовка игры -------------------------------------
 		function drawGame(){
