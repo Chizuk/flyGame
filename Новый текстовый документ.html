@@ -14,8 +14,62 @@
 <canvas id="myCanvas" width="720" height="600"></canvas>
 
 <script>
-	var canvas = document.getElementById("myCanvas");//самолет игрока (начало)
+
+var canvas = document.getElementById("myCanvas");//самолет игрока (начало)
 	var ctx = canvas.getContext("2d");
+	
+//-------------навигациЯ по главному меню-----------
+	var GameStyle="MainMenu"//режимы прорисовки (меню игра и пауза )
+	var elem =document.getElementById('myCanvas'), 
+		elemLeft = elem.offsetLeft,
+		elemTop = elem.offsetTop;
+	var MouseX,MouseY;
+	
+	document.addEventListener("click", function(event){
+		MouseX = event.pageX - elemLeft,
+        MouseY = event.pageY - elemTop;
+		if(MouseX>BlockX && MouseY>StartBlockY-BlockIndent-BlockHeight && MouseX<BlockX+BlockWidth && MouseY<StartBlockY-BlockIndent){
+			GameStyle="Game";
+		}
+	}, false);
+	
+	function ClickGame(event){
+		MouseX = event.pageX - elemLeft,
+        MouseY = event.pageY - elemTop;
+		if(MouseX>BlockX && MouseY>StartBlockY-BlockIndent-BlockHeight && MouseX<BlockX+BlockWidth && MouseY<StartBlockY-BlockIndent){
+			GameStyle="Game";
+		}
+	}
+//---------------------меню-------------------------	
+var BlockHeight=75;
+var BlockWidth=150;
+var BlockIndent=35;
+var BlockX=(canvas.width-BlockWidth)/2;
+var StartBlockY=canvas.height/2;
+
+function DrawGameBlock(){
+	ctx.beginPath();
+	ctx.rect(BlockX,StartBlockY-BlockIndent-BlockHeight,BlockWidth,BlockHeight);
+	ctx.fillStyle = "red";
+	ctx.fill();
+	ctx.closePath();
+}
+function DrawSettingsBlock(){
+	ctx.beginPath();
+	ctx.rect(BlockX,StartBlockY,BlockWidth,BlockHeight);
+	ctx.fillStyle = "Yellow";
+	ctx.fill();
+	ctx.closePath();
+}
+function DrawTopBlock() {
+	ctx.beginPath();
+	ctx.rect(BlockX,StartBlockY+BlockIndent+BlockHeight,BlockWidth,BlockHeight);
+	ctx.fillStyle = "Green";
+	ctx.fill();
+	ctx.closePath();
+}
+
+//---------------------игрок-------------------------
 	var paddleHeight = 30;
 	var paddleWidth = 75;
 	var paddleX = (canvas.width-paddleWidth)/2;
@@ -28,7 +82,7 @@
 		function drawBrick() {
 			ctx.beginPath();
 			ctx.rect(paddleX, canvas.height-paddleHeight*2, brickkWidth, brickkHeight);
-			ctx.fillStyle = "0095DD";
+			ctx.fillStyle = "#0095DD";
 			ctx.fill();
 			ctx.closePath();
 		}
@@ -112,7 +166,7 @@
 				if(idBull[i]== 1){
 					ctx.beginPath();
 					ctx.arc(bullArrX[i],bullArrY[i],bulletRadius,0,Math.PI*2);//X-отступ слева,Y- сверху 
-					ctx.fillStyle="0095DD";
+					ctx.fillStyle="#0095DD";
 					ctx.fill();
 					ctx.closePath;			
 					bullArrY[i]-=BylletDY;		
@@ -139,7 +193,7 @@
 		var counterLive=0;//щетчик живых врагов
 		var counterType=[0,0,0,0];//щетчик врагов разных тивов 
 		
-		function EnemyPilot(Type){
+		function EnemyPilot(Type,num){
 			this.Height=20;
 			this.Width=50;
 			this.typeE=Type;
@@ -163,6 +217,7 @@
 					this.Right=false;
 					break;			
 			}
+			this.Number=num;
 			this.StartY=0-this.Height;
 			this.GoX=1;
 			this.GoY=0.5;
@@ -175,42 +230,49 @@
 		function EnemySpawn(){
 			if(counterLive<MaxEnemy){
 				if(counterType[0]<=counterType[1] && counterType[0]<=counterType[2] && counterType[0]<=counterType[3]){
-					EnemyPilots[counter]=new EnemyPilot(0);
+					EnemyPilots[counter]=new EnemyPilot(0,counter);
 					counter+=1;
 					counterType[0]+=1;
 					counterLive+=1;
 				}
-				if(counterType[1]<counterType[0] && counterType[1]<=counterType[2] && counterType[1]<=counterType[3]){
-					EnemyPilots[counter]=new EnemyPilot(1);
-					counter+=1;
-					counterLive+=1;
-					counterType[1]+=1;
+				else{
+					if(counterType[1]<counterType[0] && counterType[1]<=counterType[2] && counterType[1]<=counterType[3]){
+						EnemyPilots[counter]=new EnemyPilot(1,counter);
+						counter+=1;
+						counterLive+=1;
+						counterType[1]+=1;
+					}
+					else{
+						if(counterType[2]<counterType[0] && counterType[2]<counterType[1] && counterType[2]<=counterType[3]){
+							EnemyPilots[counter]=new EnemyPilot(2,counter);
+							counter+=1;
+							counterLive+=1;
+							counterType[2]+=1;
+						}					
+						else{
+							if(counterType[3]<counterType[0] && counterType[3]<counterType[2] && counterType[3]<counterType[1]){
+								EnemyPilots[counter]=new EnemyPilot(3,counter);
+								counter+=1;
+								counterLive+=1;
+								counterType[3]+=1;
+							}	
+						}	
+					}
 				}
-				if(counterType[2]<counterType[0] && counterType[2]<counterType[1] && counterType[2]<=counterType[3]){
-					EnemyPilots[counter]=new EnemyPilot(2);
-					counter+=1;
-					counterLive+=1;
-					counterType[2]+=1;
-				}
-				if(counterType[3]<counterType[0] && counterType[3]<counterType[2] && counterType[3]<counterType[1]){
-					EnemyPilots[counter]=new EnemyPilot(3);
-					counter+=1;
-					counterLive+=1;
-					counterType[3]+=1;
-				}				
 			}
 		}
+		
 		function EnemyDraw(){
 			EnemySpawn();
-			for(var i=0;i<counter;i++){
-				if(EnemyPilots[i].life){
+			for(var c=0;c<counter;c++){
+				if(EnemyPilots[c].life){
 					ctx.beginPath();					
-					ctx.rect(EnemyPilots[i].StartX, EnemyPilots[i].StartY, EnemyPilots[i].Width, EnemyPilots[i].Height);
-					ctx.fillStyle = "0095DD";
+					ctx.rect(EnemyPilots[c].StartX, EnemyPilots[c].StartY, EnemyPilots[c].Width, EnemyPilots[c].Height);
+					ctx.fillStyle = "#0095DD";
 					ctx.fill();
 					ctx.closePath();	
-					EnemyGo(i);
-					DestroyEnemy(i);
+					EnemyGo(c);
+					DestroyEnemy(c);
 				}
 			}	
 		
@@ -222,6 +284,9 @@
 				if(EnemyPilots[i].Right==false){
 						EnemyPilots[i].StartX-=EnemyPilots[i].GoX;
 						EnemyPilots[i].StartY+=EnemyPilots[i].GoY;
+						if(EnemyPilots[i].StartY==100||EnemyPilots[i].StartY==200||EnemyPilots[i].StartY==300||EnemyPilots[i].StartY==400){
+							EnemyBullStart();
+						}
 						if(EnemyPilots[i].StartX<=25){
 							EnemyPilots[i].Right=true;
 						}
@@ -231,6 +296,9 @@
 					if(EnemyPilots[i].Right==true){
 						EnemyPilots[i].StartX+=EnemyPilots[i].GoX;
 						EnemyPilots[i].StartY+=EnemyPilots[i].GoY;
+						if(EnemyPilots[i].StartY==100||EnemyPilots[i].StartY==200||EnemyPilots[i].StartY==300||EnemyPilots[i].StartY==400){
+							EnemyBullStart();
+						}
 						if(EnemyPilots[i].StartX>=105){
 							EnemyPilots[i].Right=false;
 						}
@@ -240,6 +308,9 @@
 					if(EnemyPilots[i].Right==false){
 						EnemyPilots[i].StartX-=EnemyPilots[i].GoX;
 						EnemyPilots[i].StartY+=EnemyPilots[i].GoY;
+						if(EnemyPilots[i].StartY==100||EnemyPilots[i].StartY==200||EnemyPilots[i].StartY==300||EnemyPilots[i].StartY==400){
+							EnemyBullStart(EnemyPilots[i].Number);
+						}
 						if(EnemyPilots[i].StartX<=205){
 							EnemyPilots[i].Right=true;
 						}
@@ -249,6 +320,9 @@
 					if(EnemyPilots[i].Right==true){
 						EnemyPilots[i].StartX+=EnemyPilots[i].GoX;
 						EnemyPilots[i].StartY+=EnemyPilots[i].GoY;
+						if(EnemyPilots[i].StartY==100||EnemyPilots[i].StartY==200||EnemyPilots[i].StartY==300||EnemyPilots[i].StartY==400){
+							EnemyBullStart();
+						}
 						if(EnemyPilots[i].StartX>=285){
 							EnemyPilots[i].Right=false;
 						}
@@ -297,19 +371,57 @@
 		function DestroyEnemy(i){
 			for(var j=0;j<NumderBull;j++){
 				if(bullArrX[j]>EnemyPilots[i].StartX && bullArrX[j]<(EnemyPilots[i].StartX+EnemyPilots[i].Width) && bullArrY[j]>EnemyPilots[i].StartY && bullArrY[j]<(EnemyPilots[i].StartY+EnemyPilots[i].Height)){
-					EnemyPilots[i].life==false;
+					EnemyPilots[i].life=false;
 					counterLive-=1;
 					DestroyB=true;
 					DestroyBull(j);
 				}		
 			}
 		}	
-//---------------------------------------------------------
+		
+		var EnemyBullId;
+		var EnemyBullLive=[];
+		var EnemyBullArrX=[];
+		var EnemyBullArrY=[];
+		for(var i=0;i<24;i++){
+			EnemyBullArrY[i]=-250;	
+			EnemyBullLive[i]=0;			
+		}
+		
+		function EnemyBullStart(a,b){
+			for(var i=0;i<24;i++){
+				if(EnemyBullLive[i]==0){
+					EnemyBullId=i;
+				}
+			}
+			//EnemyBullArrX[EnemyBullId]=;//
+			//EnemyBullArrY[EnemyBullId]=;//
+		}
+		function EnemyFire(){
+			ctx.beginPath();
+			ctx.arc(EnemyBullArrX[i],EnemyBullArrY[i],bulletRadius,0,Math.PI*2);
+			ctx.fillStyle="red";
+			ctx.fill();
+			ctx.closePath;			
+		}
+//--------------------Џрорисовка игры -------------------------------------
 		function drawGame(){
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
-			drawPlayer();//прорисовка игрока 
-			drawBullet();//прорисовка выстрелов игрока		
-			EnemyDraw();//прорисовка врага 
+			switch(GameStyle){
+				case "MainMenu":
+					ctx.clearRect(0, 0, canvas.width, canvas.height);
+					DrawGameBlock();
+					DrawSettingsBlock();
+					DrawTopBlock();
+					break;
+				case "Game":
+					ctx.clearRect(0, 0, canvas.width, canvas.height);
+					drawPlayer();//прорисовка игрока 
+					drawBullet();//прорисовка выстрелов игрока		
+					EnemyDraw();//прорисовка врага 
+					break;
+			}
+		
+		
 		}
 		
 		setInterval(drawGame, 10);
