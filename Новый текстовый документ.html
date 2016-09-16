@@ -20,18 +20,11 @@ var canvas = document.getElementById("myCanvas");//самолет игрока (начало)
 	
 //-------------навигациЯ по главному меню-----------
 	var GameStyle="MainMenu"//режимы прорисовки (меню игра и пауза )
-	var elem =document.getElementById('myCanvas'), 
-		elemLeft = elem.offsetLeft,
-		elemTop = elem.offsetTop;
+	var elemLeft = canvas.offsetLeft,
+		elemTop = canvas.offsetTop;
 	var MouseX,MouseY;
 	
-	document.addEventListener("click", function(event){
-		MouseX = event.pageX - elemLeft,
-        MouseY = event.pageY - elemTop;
-		if(MouseX>BlockX && MouseY>StartBlockY-BlockIndent-BlockHeight && MouseX<BlockX+BlockWidth && MouseY<StartBlockY-BlockIndent){
-			GameStyle="Game";
-		}
-	}, false);
+
 	
 	function ClickGame(event){
 		MouseX = event.pageX - elemLeft,
@@ -70,6 +63,7 @@ function DrawTopBlock() {
 }
 
 //---------------------игрок-------------------------
+	var PlayerLifes=5;//жизни игрока 
 	var paddleHeight = 30;
 	var paddleWidth = 75;
 	var paddleX = (canvas.width-paddleWidth)/2;
@@ -189,6 +183,7 @@ function DrawTopBlock() {
 		}
 //---------------------------------------------------------
 //враги 
+		var MaxFollenEnemy=5;
 		var counter=0;//щетчик врагов
 		var counterLive=0;//щетчик живых врагов
 		var counterType=[0,0,0,0];//щетчик врагов разных тивов 
@@ -272,7 +267,8 @@ function DrawTopBlock() {
 					ctx.closePath();	
 					EnemyGo(c);
 					DestroyEnemy(c);
-					if(EnemyPilots[c].StartY==100||EnemyPilots[c].StartY==200||EnemyPilots[c].StartY==300||EnemyPilots[c].StartY==400){
+				
+					if(EnemyPilots[c].StartY==200||EnemyPilots[c].StartY==300||EnemyPilots[c].StartY==400){
 							EnemyBullStart(c);
 						}
 				}
@@ -369,12 +365,19 @@ function DrawTopBlock() {
 					DestroyBull(j);
 				}		
 			}
+			if(EnemyPilots[i].StartY>=canvas.height+10){
+						EnemyPilots[i].life=false;
+						MaxFollenEnemy-=1;
+						counterLive-=1;
+					}
+			
 		}	
-		
+	//-----------------------стрельба врага-------------------	
 		var EnemyBullId;
 		var EnemyBullLive=[];
 		var EnemyBullArrX=[];
 		var EnemyBullArrY=[];
+		
 		for(var i=0;i<24;i++){
 			EnemyBullArrY[i]=-250;	
 			EnemyBullLive[i]=0;			
@@ -386,21 +389,46 @@ function DrawTopBlock() {
 					EnemyBullId=i;
 				}
 			}
-			
-			EnemyBullArrX[EnemyBullId]=(EnemyPilots[c].StartX+EnemyPilots[c].Width)/2;//
+			EnemyBullLive[EnemyBullId]=1;
+			EnemyBullArrX[EnemyBullId]=EnemyPilots[c].StartX+EnemyPilots[c].Width/2;//
 			EnemyBullArrY[EnemyBullId]=EnemyPilots[c].StartY+EnemyPilots[c].Height+bulletRadius;//
-			
-			EnemyFire();
 		}
 		function EnemyFire(){
 			for(var i=0;i<24;i++){
-				ctx.beginPath();
-				ctx.arc(EnemyBullArrX[i],EnemyBullArrY[i],bulletRadius,0,Math.PI*2);
-				ctx.fillStyle="red";
-				ctx.fill();
-				ctx.closePath;		
+				if(EnemyBullLive[i]==1){
+					EnemyBullArrY[i]+=BylletDY;
+					ctx.beginPath();
+					ctx.arc(EnemyBullArrX[i],EnemyBullArrY[i],bulletRadius,0,Math.PI*2);
+					ctx.fillStyle="red";
+					ctx.fill();
+					ctx.closePath;	
+					if(EnemyBullArrX[i]>=paddleX && EnemyBullArrX[i]<= paddleX+brickkWidth && EnemyBullArrY[i]>=canvas.height-paddleHeight*2 && EnemyBullArrY[i]<=canvas.height-paddleHeight*2 + brickkHeight ){
+						PlayerLifes -= 1;
+						EnemyBullLive[i]=0;
+					}
+					if( EnemyBullArrY[i]>=canvas.height+20){
+						EnemyBullLive[i]=0;
+					}
+				}
 			}
 		}
+//---------------------------верхнее меню----------------------------------
+function TopMenu(){
+	ctx.beginPath();
+	ctx.rect(0,0,canvas.width,100);
+	ctx.fillStyle="Black";
+	ctx.fill();
+	ctx.closePath;
+}		
+//--------------------Џроигрышь---------------------------------------------
+		function GameOver(){
+			if(PlayerLifes==0 || MaxFollenEnemy==0 ){
+			GameStyle="GameOver";
+			PlayerLifes=5;
+			MaxFollenEnemy=5;
+			}		
+		}
+		
 //--------------------Џрорисовка игры -------------------------------------
 		function drawGame(){
 			switch(GameStyle){
@@ -409,12 +437,29 @@ function DrawTopBlock() {
 					DrawGameBlock();
 					DrawSettingsBlock();
 					DrawTopBlock();
+					
+					document.addEventListener("click", function(event){
+						MouseX = event.pageX - elemLeft,
+						MouseY = event.pageY - elemTop;
+						if(MouseX>BlockX && MouseY>StartBlockY-BlockIndent-BlockHeight && MouseX<BlockX+BlockWidth && MouseY<StartBlockY-BlockIndent){
+							GameStyle="Game";
+							document.removeEventListener("click");
+					}
+				}, false);
 					break;
 				case "Game":
 					ctx.clearRect(0, 0, canvas.width, canvas.height);
 					drawPlayer();//прорисовка игрока 
 					drawBullet();//прорисовка выстрелов игрока		
 					EnemyDraw();//прорисовка врага 
+					EnemyFire();//выстрел врага
+					GameOver();//условиЯ проиграша
+					TopMenu();
+					break;
+					
+				case "GameOver":
+					ctx.clearRect(0, 0, canvas.width, canvas.height);
+					
 					break;
 			}
 		
