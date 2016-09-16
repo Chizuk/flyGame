@@ -13,10 +13,15 @@
 
 <canvas id="myCanvas" width="720" height="600"></canvas>
 
+<img id="StartGameImg" src="StartGame.jpg" class="ImagesCanvas">
+<img id="Logoytype" src="Logo.jpg" class="ImagesCanvas">
+<!--<img id="BGGame" src="BackgroundGame.gif" class="ImagesCanvas">-->
+<img id="Heart" src="Live.jpeg" class="ImagesCanvas">
 <script>
 
 var canvas = document.getElementById("myCanvas");//самолет игрока (начало)
 	var ctx = canvas.getContext("2d");
+	
 	
 //-------------навигациЯ по главному меню-----------
 	var GameStyle="MainMenu"//режимы прорисовки (меню игра и пауза )
@@ -39,13 +44,14 @@ var BlockWidth=150;
 var BlockIndent=35;
 var BlockX=(canvas.width-BlockWidth)/2;
 var StartBlockY=canvas.height/2;
+function DrawLogo(){
+	var imgLogo = document.getElementById("Logoytype");
+	ctx.drawImage(imgLogo,185,5);
+}
 
 function DrawGameBlock(){
-	ctx.beginPath();
-	ctx.rect(BlockX,StartBlockY-BlockIndent-BlockHeight,BlockWidth,BlockHeight);
-	ctx.fillStyle = "red";
-	ctx.fill();
-	ctx.closePath();
+	var imgStartGame = document.getElementById("StartGameImg");	
+	ctx.drawImage(imgStartGame,BlockX,StartBlockY-BlockIndent-BlockHeight);
 }
 function DrawSettingsBlock(){
 	ctx.beginPath();
@@ -268,7 +274,7 @@ function DrawTopBlock() {
 					EnemyGo(c);
 					DestroyEnemy(c);
 				
-					if(EnemyPilots[c].StartY==200||EnemyPilots[c].StartY==300||EnemyPilots[c].StartY==400){
+					if(EnemyPilots[c].StartY==120||EnemyPilots[c].StartY==200||EnemyPilots[c].StartY==300||EnemyPilots[c].StartY==400){
 							EnemyBullStart(c);
 						}
 				}
@@ -415,11 +421,28 @@ function DrawTopBlock() {
 //---------------------------верхнее меню----------------------------------
 function TopMenu(){
 	ctx.beginPath();
-	ctx.rect(0,0,canvas.width,100);
+	ctx.rect(0,0,canvas.width,50);
 	ctx.fillStyle="Black";
 	ctx.fill();
 	ctx.closePath;
-}		
+	DrawLiives();
+	DrawEnemyOffers();
+}	
+function DrawLiives(){
+	var Live = document.getElementById("Heart");
+	for(var i=1;i<=PlayerLifes;i++){	
+		ctx.drawImage(Live,(i+15)*5,5,15,15);
+	}
+}
+
+
+function DrawEnemyOffers(){
+	ctx.beginPath();
+	ctx.font="16px Arial";
+	ctx.fillStyle="White";
+	ctx.fillText("Enemy run:"+MaxFollenEnemy,100,20);
+	ctx.closePath;
+}
 //--------------------Џроигрышь---------------------------------------------
 		function GameOver(){
 			if(PlayerLifes==0 || MaxFollenEnemy==0 ){
@@ -434,21 +457,25 @@ function TopMenu(){
 			switch(GameStyle){
 				case "MainMenu":
 					ctx.clearRect(0, 0, canvas.width, canvas.height);
+					//DrawGameBG();
 					DrawGameBlock();
 					DrawSettingsBlock();
 					DrawTopBlock();
+					DrawLogo();
 					
 					document.addEventListener("click", function(event){
 						MouseX = event.pageX - elemLeft,
 						MouseY = event.pageY - elemTop;
 						if(MouseX>BlockX && MouseY>StartBlockY-BlockIndent-BlockHeight && MouseX<BlockX+BlockWidth && MouseY<StartBlockY-BlockIndent){
 							GameStyle="Game";
-							document.removeEventListener("click");
+						//	document.removeEventListener("click");
 					}
 				}, false);
 					break;
 				case "Game":
+				
 					ctx.clearRect(0, 0, canvas.width, canvas.height);
+					//DrawGameBG();					
 					drawPlayer();//прорисовка игрока 
 					drawBullet();//прорисовка выстрелов игрока		
 					EnemyDraw();//прорисовка врага 
