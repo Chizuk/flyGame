@@ -1,9 +1,5 @@
 .ImagesCanvas{
 	display:none;
 }
-#myCanvas{
-	background-image:url('BackgroundGame.gif');
-	z-index:-1;
-}
-	
+
 
