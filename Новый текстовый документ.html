@@ -36,7 +36,7 @@ var canvas = document.getElementById("myCanvas");//самолет игрока (начало)
 	elemTop = canvas.offsetTop;
 	MouseX = event.pageX - elemLeft,
 	MouseY = event.pageY - elemTop;
-	if(MouseX>BlockX && MouseY>StartBlockY-BlockIndent-BlockHeight && MouseX<BlockX+BlockWidth && MouseY<StartBlockY-BlockIndent){
+	if(MouseX>BlockX && MouseY>StartBlockY && MouseX<BlockX+BlockWidth && MouseY<StartBlockY+BlockHeight){
 		GameStyle="Game";
 		document.removeEventListener("click", Fun, false);
 	}
@@ -61,21 +61,7 @@ var canvas = document.getElementById("myCanvas");//самолет игрока (начало)
 
 	function DrawGameBlock(){
 		var imgStartGame = document.getElementById("StartGameImg");	
-		ctx.drawImage(imgStartGame,BlockX,StartBlockY-BlockIndent-BlockHeight);
-	}
-	function DrawSettingsBlock(){
-		ctx.beginPath();
-		ctx.rect(BlockX,StartBlockY,BlockWidth,BlockHeight);
-		ctx.fillStyle = "Yellow";
-		ctx.fill();
-		ctx.closePath();
-	}
-	function DrawTopBlock() {
-		ctx.beginPath();
-		ctx.rect(BlockX,StartBlockY+BlockIndent+BlockHeight,BlockWidth,BlockHeight);
-		ctx.fillStyle = "Green";
-		ctx.fill();
-		ctx.closePath();
+		ctx.drawImage(imgStartGame,BlockX,StartBlockY);
 	}
 
 //---------------------игрок-------------------------
@@ -502,9 +488,7 @@ function DrawHighScore(){
 					ctx.clearRect(0, 0, canvas.width, canvas.height);
 					document.addEventListener("click", Fun, false);
 					//DrawGameBG();
-					DrawGameBlock();
-					DrawSettingsBlock();
-					DrawTopBlock();
+					DrawGameBlock();					
 					DrawLogo();					
 					break;
 				case "Game":
