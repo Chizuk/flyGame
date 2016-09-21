@@ -15,11 +15,12 @@
 
 <img id="StartGameImg" src="StartGame.jpg" class="ImagesCanvas">
 <img id="Logoytype" src="Logo.jpg" class="ImagesCanvas">
-<img id="BGGame" src="BackgroundGame.jpg" class="ImagesCanvas">
+<img id="BGGame" src="BackgroundGame.gif" class="ImagesCanvas">
 <img id="Heart" src="Live.jpeg" class="ImagesCanvas">
 <img id="ELeft" src="EnemyLeft.png" class="ImagesCanvas">
 <img id="RestartBut" src="RestartBut.jpg" class="ImagesCanvas">
 <img id="UnitE" src="EnemyUnit.png" class="ImagesCanvas">
+<img id="PlayerImg" src="Player.png" class="ImagesCanvas">
 <script>
 
 var canvas = document.getElementById("myCanvas");//самолет игрока (начало)
@@ -28,58 +29,60 @@ var canvas = document.getElementById("myCanvas");//самолет игрока (начало)
 	
 //-------------навигациЯ по главному меню-----------
 	var GameStyle="MainMenu"//режимы прорисовки (меню игра и пауза )
-	
 	var MouseX,MouseY;
 	
-
-	
-	function ClickGame(event){
-		MouseX = event.pageX - elemLeft,
-        MouseY = event.pageY - elemTop;
-		if(MouseX>BlockX && MouseY>StartBlockY-BlockIndent-BlockHeight && MouseX<BlockX+BlockWidth && MouseY<StartBlockY-BlockIndent){
-			GameStyle="Game";
-		}
+	function Fun(event){
+	var elemLeft = canvas.offsetLeft,
+	elemTop = canvas.offsetTop;
+	MouseX = event.pageX - elemLeft,
+	MouseY = event.pageY - elemTop;
+	if(MouseX>BlockX && MouseY>StartBlockY-BlockIndent-BlockHeight && MouseX<BlockX+BlockWidth && MouseY<StartBlockY-BlockIndent){
+		GameStyle="Game";
+		document.removeEventListener("click", Fun, false);
 	}
+
+}
+
 //---------------------меню-------------------------	
-var BlockHeight=75;
-var BlockWidth=150;
-var BlockIndent=35;
-var BlockX=(canvas.width-BlockWidth)/2;
-var StartBlockY=canvas.height/2;
-function DrawLogo(){
-	var imgLogo = document.getElementById("Logoytype");
-	ctx.drawImage(imgLogo,185,5);
-}
+	var BlockHeight=75;
+	var BlockWidth=150;
+	var BlockIndent=35;
+	var BlockX=(canvas.width-BlockWidth)/2;
+	var StartBlockY=canvas.height/2;
+	function DrawLogo(){
+		var imgLogo = document.getElementById("Logoytype");
+		ctx.drawImage(imgLogo,185,5);
+	}
 
-function DrawGameBG(){
-	var GameBg = document.getElementById("BGGame");
-	ctx.drawImage(GameBg,0,0,canvas.width,canvas.height);
-}
+	function DrawGameBG(){
+		var GameBg = document.getElementById("BGGame");
+		ctx.drawImage(GameBg,0,0,canvas.width,canvas.height);
+	}
 
-function DrawGameBlock(){
-	var imgStartGame = document.getElementById("StartGameImg");	
-	ctx.drawImage(imgStartGame,BlockX,StartBlockY-BlockIndent-BlockHeight);
-}
-function DrawSettingsBlock(){
-	ctx.beginPath();
-	ctx.rect(BlockX,StartBlockY,BlockWidth,BlockHeight);
-	ctx.fillStyle = "Yellow";
-	ctx.fill();
-	ctx.closePath();
-}
-function DrawTopBlock() {
-	ctx.beginPath();
-	ctx.rect(BlockX,StartBlockY+BlockIndent+BlockHeight,BlockWidth,BlockHeight);
-	ctx.fillStyle = "Green";
-	ctx.fill();
-	ctx.closePath();
-}
+	function DrawGameBlock(){
+		var imgStartGame = document.getElementById("StartGameImg");	
+		ctx.drawImage(imgStartGame,BlockX,StartBlockY-BlockIndent-BlockHeight);
+	}
+	function DrawSettingsBlock(){
+		ctx.beginPath();
+		ctx.rect(BlockX,StartBlockY,BlockWidth,BlockHeight);
+		ctx.fillStyle = "Yellow";
+		ctx.fill();
+		ctx.closePath();
+	}
+	function DrawTopBlock() {
+		ctx.beginPath();
+		ctx.rect(BlockX,StartBlockY+BlockIndent+BlockHeight,BlockWidth,BlockHeight);
+		ctx.fillStyle = "Green";
+		ctx.fill();
+		ctx.closePath();
+	}
 
 //---------------------игрок-------------------------
 	var Score = 0;
 	var PlayerLifes=5;//жизни игрока 
-	var paddleHeight = 30;
-	var paddleWidth = 75;
+	var paddleHeight = 50;
+	var paddleWidth = 50;
 	var paddleX = (canvas.width-paddleWidth)/2;
 	var rightPressed = false;
 	var leftPressed = false;
@@ -88,11 +91,10 @@ function DrawTopBlock() {
 	document.addEventListener("keydown", keyDownHandler, false);
 	document.addEventListener("keyup", keyUpHandler, false);
 		function drawBrick() {
-			ctx.beginPath();
-			ctx.rect(paddleX, canvas.height-paddleHeight*2, brickkWidth, brickkHeight);
-			ctx.fillStyle = "#0095DD";
-			ctx.fill();
-			ctx.closePath();
+			
+		var PlayerImg = document.getElementById("PlayerImg");	
+			ctx.drawImage(PlayerImg,paddleX, canvas.height-paddleHeight*2, brickkWidth, brickkHeight);
+
 		}
 		function drawPlayer() {
 			drawBrick();
@@ -156,13 +158,14 @@ function DrawTopBlock() {
 				}
 				idBull[Bullid]=1;
 				bullArrX[Bullid]=(paddleX+brickkWidth/2);
+				bullArrY[Bullid]=(canvas.height-paddleHeight*2)-bulletRadius;
 		}
 		var DestroyB=false;
 		function DestroyBull(i){
 			
 				if(bullArrY[i]<-6 || DestroyB){
 					idBull[i]=0;
-					bullArrY[i]=(canvas.height-paddleHeight*2)-bulletRadius;	
+					bullArrY[i]=-250;	
 					DestroyB=false;					
 				}				
 			}
@@ -491,24 +494,14 @@ function DrawHighScore(){
 	ctx.fillText("Highscore: "+Highscore,300,20);
 }
 
-function Fun(event){
-	var elemLeft = canvas.offsetLeft,
-	elemTop = canvas.offsetTop;
-	MouseX = event.pageX - elemLeft,
-	MouseY = event.pageY - elemTop;
-	if(MouseX>BlockX && MouseY>StartBlockY-BlockIndent-BlockHeight && MouseX<BlockX+BlockWidth && MouseY<StartBlockY-BlockIndent){
-		GameStyle="Game";
-		document.removeEventListener("click", Fun, false);
-	}
 
-}
 //--------------------Џрорисовка игры -------------------------------------
 		function drawGame(){
 			switch(GameStyle){
 				case "MainMenu":
 					ctx.clearRect(0, 0, canvas.width, canvas.height);
 					document.addEventListener("click", Fun, false);
-					DrawGameBG();
+					//DrawGameBG();
 					DrawGameBlock();
 					DrawSettingsBlock();
 					DrawTopBlock();
@@ -517,7 +510,7 @@ function Fun(event){
 				case "Game":
 				
 					ctx.clearRect(0, 0, canvas.width, canvas.height);
-					DrawGameBG();					
+					//DrawGameBG();					
 					drawPlayer();//прорисовка игрока 
 					drawBullet();//прорисовка выстрелов игрока		
 					EnemyDraw();//прорисовка врага 
