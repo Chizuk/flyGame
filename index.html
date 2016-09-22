@@ -134,7 +134,7 @@ var canvas = document.getElementById("myCanvas");//самолет игрока (начало)
 		var Bullid;
 		for(var i=0;i<NumderBull;i++){
 			idBull[i]=0;
-			bullArrY[i]=(canvas.height-paddleHeight*2)-bulletRadius;
+			bullArrY[i]=-250;
 		}
 		
 
@@ -456,7 +456,7 @@ function DrawScore(){
 }
 //--------------------Проигрышь---------------------------------------------
 		var Highscore;
-		var HighscoreTime;
+		var HighscoreTime=0;
 		function HightMath(){
 			HighscoreTime = document.cookie.split('=')[1];
 			if(HighscoreTime==undefined){
@@ -480,6 +480,7 @@ function DrawScore(){
 			MaxFollenEnemy=5;
 			ReturnAllToZero();
 			counterLive=0;
+			HightMath();
 			}		
 		}
 		
@@ -493,7 +494,7 @@ function DrawScore(){
 			}
 			for(var i=0;i<NumderBull;i++){
 				idBull[i]=0;
-				bullArrY[i]=(canvas.height-paddleHeight*2)-bulletRadius;
+				bullArrY[i]=-250;
 			}
 			//-----------------------------------------------
 			for(var i=0;i<EnemyPilots.length;i++){
@@ -558,7 +559,8 @@ function DrawLose(){
 					document.addEventListener("click", Fun, false);
 					//DrawGameBG();
 					DrawGameBlock();					
-					DrawLogo();					
+					DrawLogo();		
+					HightMath();
 					break;
 				case "Game":
 				
