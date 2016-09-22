@@ -16,16 +16,20 @@
 <img id="StartGameImg" src="StartGame.jpg" class="ImagesCanvas">
 <img id="Logoytype" src="Logo.jpg" class="ImagesCanvas">
 <img id="BGGame" src="BackgroundGame.gif" class="ImagesCanvas">
-<img id="Heart" src="Live.jpeg" class="ImagesCanvas">
+<img id="Heart" src="Live.png" class="ImagesCanvas">
 <img id="ELeft" src="EnemyLeft.png" class="ImagesCanvas">
 <img id="RestartBut" src="RestartBut.jpg" class="ImagesCanvas">
 <img id="UnitE" src="EnemyUnit.png" class="ImagesCanvas">
 <img id="PlayerImg" src="Player.png" class="ImagesCanvas">
+<img id="MBattImg" src="MenuBat.jpg" class="ImagesCanvas">
 <script>
+
+	var LastScore=0;
+
 
 var canvas = document.getElementById("myCanvas");//самолет игрока (начало)
 	var ctx = canvas.getContext("2d");
-	
+
 	
 //-------------навигациЯ по главному меню-----------
 	var GameStyle="MainMenu"//режимы прорисовки (меню игра и пауза )
@@ -456,15 +460,38 @@ function DrawScore(){
 			GameStyle="GameOver";
 			PlayerLifes=5;
 			MaxFollenEnemy=5;
-			for(var i=0;i<counter;i++){
-				EnemyPilots[i].Live=false;
-			}
+			ReturnAllToZero();
 			counterLive=0;
+			
 			document.cookie = "Highscore="+Score;
 			}		
 		}
 		
+		function ReturnAllToZero(){//‚озвращение всех переменных к начальным 
+			paddleX = (canvas.width-paddleWidth)/2;
+			LastScore=Score;
+			Score=0;
+			for(var i=0;i<24;i++){
+				EnemyBullArrY[i]=-250;	
+				EnemyBullLive[i]=0;			
+			}
+			for(var i=0;i<NumderBull;i++){
+				idBull[i]=0;
+				bullArrY[i]=(canvas.height-paddleHeight*2)-bulletRadius;
+			}
+			//-----------------------------------------------
+			for(var i=0;i<EnemyPilots.length;i++){
+				EnemyPilots[i].life=false;
+			}
+			counter = 0;
+		}
 		
+		
+		
+		function DrawMenuButton(){
+			var MenuBatt = document.getElementById("MBattImg");	
+			ctx.drawImage(MenuBatt,BlockX,StartBlockY,150,75);
+		}
 		
 		
 		function DrawRestartButton(){
@@ -472,6 +499,27 @@ function DrawScore(){
 			ctx.drawImage(RestartIMG,BlockX,StartBlockY-BlockIndent-BlockHeight,150,75);
 		}
 		
+		function ReturnMenu(event){
+			var elemLeft = canvas.offsetLeft,
+			elemTop = canvas.offsetTop;
+			MouseX = event.pageX - elemLeft,
+			MouseY = event.pageY - elemTop;
+			if(MouseX>BlockX && MouseY>StartBlockY && MouseX<BlockX+BlockWidth && MouseY<StartBlockY+BlockHeight){
+				GameStyle="MainMenu";
+				document.removeEventListener("click", ReturnMenu, false);
+			}
+		}
+		
+		function Restart(event){
+			var elemLeft = canvas.offsetLeft,
+			elemTop = canvas.offsetTop;
+			MouseX = event.pageX - elemLeft,
+			MouseY = event.pageY - elemTop;
+			if(MouseX>BlockX && MouseY>StartBlockY-BlockIndent-BlockHeight && MouseX<BlockX+BlockWidth && MouseY<StartBlockY-BlockIndent){
+				GameStyle="Game";
+				document.removeEventListener("click", Restart, false);
+			}
+		}
 //---------------------------------------------------------
 function DrawHighScore(){
 	ctx.font="16px Arial";
@@ -480,6 +528,13 @@ function DrawHighScore(){
 	ctx.fillText("Highscore: "+Highscore,300,20);
 }
 
+function DrawLose(){
+	ctx.font="40px Arial";
+	var Highscore = document.cookie.split('=')[1];
+	ctx.fillStyle ="Green";
+	ctx.fillText("You lose ! ",270,100);
+	ctx.fillText("Your score : " + LastScore,240,150);
+}
 
 //--------------------Џрорисовка игры -------------------------------------
 		function drawGame(){
@@ -505,7 +560,11 @@ function DrawHighScore(){
 					
 				case "GameOver":
 					ctx.clearRect(0, 0, canvas.width, canvas.height);
+					document.addEventListener("click", ReturnMenu, false);
+					document.addEventListener("click", Restart, false);
 					DrawRestartButton();
+					DrawMenuButton();
+					DrawLose();
 					break;
 			}
 		
