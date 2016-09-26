@@ -380,7 +380,21 @@ var canvas = document.getElementById("myCanvas");//самолет игрока (начало)
 						MaxFollenEnemy-=1;
 						counterLive-=1;
 					}
-			
+					
+			if(EnemyPilots[i].StartY+EnemyPilots[i].Height>canvas.height-paddleHeight*2 || EnemyPilots[i].StartY<canvas.height-paddleHeight*2+EnemyPilots[i].Heght){
+					if(EnemyPilots[i].StartX+EnemyPilots[i].Width<paddleX+brickkWidth && EnemyPilots[i].StartX+EnemyPilots[i].Width>paddleX){
+						EnemyPilots[i].life=false;
+						counterLive-=1;
+						PlayerLifes-=1;
+					}
+					else{
+						if(EnemyPilots[i].StartX>paddleX && EnemyPilots[i].StartX<paddleX+brickkWidth ){
+						EnemyPilots[i].life=false;
+						counterLive-=1;
+						PlayerLifes-=1;
+						}
+					}
+			}
 		}	
 	//-----------------------стрельба врага-------------------	
 		var EnemyBullId;
