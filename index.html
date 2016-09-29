@@ -12,7 +12,6 @@
 <body>
 
 <canvas id="myCanvas" width="720" height="600"></canvas>
-
 <img id="StartGameImg" src="StartGame.jpg" class="ImagesCanvas">
 <img id="Logoytype" src="Logo.jpg" class="ImagesCanvas">
 <img id="BGGame" src="BackgroundGame.gif" class="ImagesCanvas">
@@ -30,7 +29,83 @@
 var canvas = document.getElementById("myCanvas");//самолет игрока (начало)
 	var ctx = canvas.getContext("2d");
 
+//-----------------------секундомер--------------------------------------
+var sec = 0, 	
+	hour = 0,
+	min = 0; 
+
+	function Stopwatch(){
+		sec++;
+		Harder();
+		if(sec==60){
+			sec=0;
+			min+=1;
+		}
+		if(min==60){
+			min=0;
+			hour+=1;
+		}
+	}	
+	/*var SecString="0";
+	var MinString="0";
+	var HourString="0";*/
 	
+	
+	function DrawStopwatch(){
+		if(sec<10){			
+			if(min<10){		
+				if(hour<10){
+				ctx.font="16px Arial";
+				ctx.fillStyle ="Green";
+				ctx.fillText("0"+hour+":"+"0"+min+":"+"0"+sec,250,20);				
+				}
+				else{
+				ctx.font="16px Arial";
+				ctx.fillStyle ="Green";
+				ctx.fillText(hour+":"+"0"+min+":"+"0"+sec,250,20);			
+				}				
+			}
+			if(min>=10){
+				if(hour<10){
+					ctx.font="16px Arial";
+					ctx.fillStyle ="Green";
+					ctx.fillText("0"+hour+":"+min+":"+"0"+sec,250,20);				
+					}
+				else{
+					ctx.font="16px Arial";
+					ctx.fillStyle ="Green";
+					ctx.fillText(hour+":"+min+":"+"0"+sec,250,20);			
+				}			
+			}		
+		}
+		else{
+			if(min<10){		
+				if(hour<10){
+				ctx.font="16px Arial";
+				ctx.fillStyle ="Green";
+				ctx.fillText("0"+hour+":"+"0"+min+":"+sec,250,20);				
+				}
+				else{
+				ctx.font="16px Arial";
+				ctx.fillStyle ="Green";
+				ctx.fillText(hour+":"+"0"+min+":"+sec,250,20);			
+				}				
+			}
+			else{
+				if(hour<10){
+					ctx.font="16px Arial";
+					ctx.fillStyle ="Green";
+					ctx.fillText("0"+hour+":"+min+":"+sec,250,20);				
+					}
+				else{
+					ctx.font="16px Arial";
+					ctx.fillStyle ="Green";
+					ctx.fillText(hour+":"+min+":"+sec,250,20);			
+				}			
+			}		
+		}
+	
+	}
 //-------------навигациЯ по главному меню-----------
 	var GameStyle="MainMenu"//режимы прорисовки (меню игра и пауза )
 	var MouseX,MouseY;
@@ -74,6 +149,7 @@ var canvas = document.getElementById("myCanvas");//самолет игрока (начало)
 	var paddleHeight = 50;
 	var paddleWidth = 50;
 	var paddleX = (canvas.width-paddleWidth)/2;
+	var paddleY=canvas.height-paddleHeight*2;
 	var rightPressed = false;
 	var leftPressed = false;
 	var brickkHeight = 20;
@@ -83,7 +159,7 @@ var canvas = document.getElementById("myCanvas");//самолет игрока (начало)
 		function drawBrick() {
 			
 		var PlayerImg = document.getElementById("PlayerImg");	
-			ctx.drawImage(PlayerImg,paddleX, canvas.height-paddleHeight*2, brickkWidth, brickkHeight);
+			ctx.drawImage(PlayerImg,paddleX,paddleY , brickkWidth, brickkHeight);
 
 		}
 		function drawPlayer() {
@@ -229,8 +305,17 @@ var canvas = document.getElementById("myCanvas");//самолет игрока (начало)
 		
 		var EnemyPilots =[];
 		var MaxEnemy=4;
-		
+		var harder=0;
+		function Harder(){
+			if(sec==20||sec==40||sec==60){
+			MaxEnemy+=1;	
+			harder+=1;
+			}		
+		}
 		function EnemySpawn(){
+			if(counterLive>harder+4){
+			counterLive=harder+4;
+			}
 			if(counterLive<MaxEnemy){
 				if(counterType[0]<=counterType[1] && counterType[0]<=counterType[2] && counterType[0]<=counterType[3]){
 					EnemyPilots[counter]=new EnemyPilot(0);
@@ -264,20 +349,22 @@ var canvas = document.getElementById("myCanvas");//самолет игрока (начало)
 				}
 			}
 		}
-		
+var TimeB=0;		
 		function EnemyDraw(){
 			EnemySpawn();
+			TimeB=0;
 			for(var c=0;c<counter;c++){
 				if(EnemyPilots[c].life){
+					TimeB+=1;
+					if(TimeB>harder+4){
+						EnemyPilots[c].life=false;
+						TimeB-=1;
+					}
 					var EnemyUnit = document.getElementById("UnitE");
-					ctx.drawImage(EnemyUnit,EnemyPilots[c].StartX, EnemyPilots[c].StartY, EnemyPilots[c].Width, EnemyPilots[c].Height);
-				
+					ctx.drawImage(EnemyUnit,EnemyPilots[c].StartX, EnemyPilots[c].StartY, EnemyPilots[c].Width, EnemyPilots[c].Height);					
 					EnemyGo(c);
-					DestroyEnemy(c);
-				
-				
-				
-					if(EnemyPilots[c].StartY==120||EnemyPilots[c].StartY==200||EnemyPilots[c].StartY==300||EnemyPilots[c].StartY==400){
+					DestroyEnemy(c);					
+					if(EnemyPilots[c].StartY==120||EnemyPilots[c].StartY==200||EnemyPilots[c].StartY==300){
 							EnemyBullStart(c);
 						}
 				}
@@ -401,10 +488,26 @@ var canvas = document.getElementById("myCanvas");//самолет игрока (начало)
 		var EnemyBullLive=[];
 		var EnemyBullArrX=[];
 		var EnemyBullArrY=[];
+	
+		var EnemyBullGoX=[];
+		var DiffY;
+		var DiffX;
+		var TimeA;
+		
+		
 		
 		for(var i=0;i<24;i++){
 			EnemyBullArrY[i]=-250;	
-			EnemyBullLive[i]=0;			
+			EnemyBullLive[i]=0;		
+			EnemyBullGoX[i]=0;
+		}
+		
+		function Traectory(i,X,Y){
+			DiffX=(paddleX+brickkWidth/2)-X;
+			DiffY=paddleY-Y;
+			TimeA=DiffY/BylletDY;
+			EnemyBullGoX[i]=DiffX/TimeA;		
+		
 		}
 		
 		function EnemyBullStart(c){
@@ -412,23 +515,28 @@ var canvas = document.getElementById("myCanvas");//самолет игрока (начало)
 				if(EnemyBullLive[i]==0){
 					EnemyBullId=i;
 				}
+				
 			}
+			
 			EnemyBullLive[EnemyBullId]=1;
 			EnemyBullArrX[EnemyBullId]=EnemyPilots[c].StartX+EnemyPilots[c].Width/2;//
 			EnemyBullArrY[EnemyBullId]=EnemyPilots[c].StartY+EnemyPilots[c].Height+bulletRadius;//
+			Traectory(EnemyBullId,EnemyBullArrX[EnemyBullId],EnemyBullArrY[EnemyBullId]);
 		}
 		function EnemyFire(){
 			for(var i=0;i<24;i++){
 				if(EnemyBullLive[i]==1){
+					
 					EnemyBullArrY[i]+=BylletDY;
+					EnemyBullArrX[i]+=EnemyBullGoX[i];
 					ctx.beginPath();
 					ctx.arc(EnemyBullArrX[i],EnemyBullArrY[i],bulletRadius,0,Math.PI*2);
 					ctx.fillStyle="red";
 					ctx.fill();
 					ctx.closePath;	
 					if(EnemyBullArrX[i]>=paddleX && EnemyBullArrX[i]<= paddleX+brickkWidth && EnemyBullArrY[i]>=canvas.height-paddleHeight*2 && EnemyBullArrY[i]<=canvas.height-paddleHeight*2 + brickkHeight ){
-						PlayerLifes -= 1;
-						EnemyBullLive[i]=0;
+						PlayerLifes -= 1; 
+						EnemyBullLive[i] = 0;
 					}
 					if( EnemyBullArrY[i]>=canvas.height+20){
 						EnemyBullLive[i]=0;
@@ -447,6 +555,7 @@ function TopMenu(){
 	DrawEnemyOffers();
 	DrawScore();
 	DrawHighScore();
+	DrawStopwatch();
 }	
 function DrawLiives(){
 	var Live = document.getElementById("Heart");
@@ -494,6 +603,12 @@ function DrawScore(){
 			MaxFollenEnemy=5;
 			ReturnAllToZero();
 			counterLive=0;
+			sec=0;
+			min=0;
+			hour=0;
+			MaxEnemy=4;
+			counterType=[0,0,0,0];
+			harder=0;
 			HightMath();
 			}		
 		}
@@ -555,7 +670,7 @@ function DrawScore(){
 function DrawHighScore(){
 	ctx.font="16px Arial";
 	ctx.fillStyle ="Green";
-	ctx.fillText("Highscore: "+Highscore,300,20);
+	ctx.fillText("Highscore: "+Highscore,400,20);
 }
 
 function DrawLose(){
@@ -579,13 +694,15 @@ function DrawLose(){
 				case "Game":
 				
 					ctx.clearRect(0, 0, canvas.width, canvas.height);
-					//DrawGameBG();					
+					//DrawGameBG();		
+				
 					drawPlayer();//прорисовка игрока 
 					drawBullet();//прорисовка выстрелов игрока		
 					EnemyDraw();//прорисовка врага 
 					EnemyFire();//выстрел врага
 					GameOver();//условиЯ проиграша
 					TopMenu();
+					
 					break;
 					
 				case "GameOver":
@@ -600,9 +717,9 @@ function DrawLose(){
 		
 		
 		}
-		
+		setInterval(Stopwatch,1000);
 		setInterval(drawGame, 10);
-
+	
 		
 		</script>
 
