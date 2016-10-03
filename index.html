@@ -35,15 +35,17 @@ var sec = 0,
 	min = 0; 
 
 	function Stopwatch(){
-		sec++;
-		Harder();
-		if(sec==60){
-			sec=0;
-			min+=1;
-		}
-		if(min==60){
-			min=0;
-			hour+=1;
+	if(GameStyle=="Game"){
+			sec++;
+			Harder();
+			if(sec==60){
+				sec=0;
+				min+=1;
+			}
+			if(min==60){
+				min=0;
+				hour+=1;
+			}
 		}
 	}	
 	/*var SecString="0";
